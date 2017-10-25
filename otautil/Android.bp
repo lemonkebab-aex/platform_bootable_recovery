@@ -25,11 +25,14 @@ cc_library_static {
     // Minimal set of files to support host build.
     srcs: [
         "paths.cpp",
+        "ZipUtil.cpp",
         "rangeset.cpp",
     ],
 
     shared_libs: [
         "libbase",
+        "libziparchive",
+        "libselinux",
     ],
 
     export_include_dirs: [
