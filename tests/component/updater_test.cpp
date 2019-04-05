@@ -55,6 +55,11 @@
 
 using namespace std::string_literals;
 
+// For tune2fs
+extern "C" {
+    const char* program_name = "updater";
+}
+
 using PackageEntries = std::unordered_map<std::string, std::string>;
 
 struct selabel_handle* sehandle = nullptr;
