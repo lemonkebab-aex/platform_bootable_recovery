@@ -68,6 +68,7 @@
 #include "recovery_utils/roots.h"
 #include "volclient.h"
 
+using android::fs_mgr::Fstab;
 using android::volmgr::VolumeManager;
 using android::volmgr::VolumeInfo;
 
@@ -179,9 +180,15 @@ static bool yes_no(Device* device, const char* question1, const char* question2)
 
 
 std::string get_preferred_fs(Device* device) {
-  std::vector<std::string> headers{ "Choose what filesystem you want to use on /data", "Entries here are supported by your device." };
-  std::vector<std::string> items = get_data_fs_items();
+  Fstab fstab;
+  auto read_fstab = ReadFstabFromFile("/etc/fstab", &fstab);
+  std::vector<std::string> headers{ "Choose what filesystem you want to use on /data", "Entries here are supported by your device.\n" };
   std::string fs = volume_for_mount_point("/data")->fs_type;
+  if (read_fstab) {
+      std::string current_filesystem = android::fs_mgr::GetEntryForPath(&fstab, "/data")->fs_type;
+      headers.emplace_back("Current filesystem: " + current_filesystem);
+  }
+  std::vector<std::string> items = get_data_fs_items();
 
   if (items.size() > 1) {
       size_t chosen_item = device->GetUI()->ShowMenu(
